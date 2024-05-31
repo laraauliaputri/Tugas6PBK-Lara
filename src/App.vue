@@ -10,7 +10,7 @@
       <li v-for="article in articles" :key="article.id" class="article-item">
         <strong>{{ article.title }}</strong><br />
         <span>{{ article.content }}</span><br />
-        <button @click="edit(article)" style="margin-right:5px" class="edit-btn">Edit</button>
+        <button @click="edit(article)" class="edit-btn">Edit</button>
         <button @click="deleteArticle(article.id)" class="delete-btn">Delete</button>
       </li>
     </ul>
@@ -45,10 +45,12 @@ export default {
       try {
         const url = form.id ? `http://localhost:3000/articles/${form.id}` : 'http://localhost:3000/articles';
         const method = form.id ? 'put' : 'post';
-        const response = await axios[method](url, form);
+        const response = await axios[method](url, {
+          title: form.title,
+          content: form.content,
+        });
 
-        // Update or add the article in the articles list
-        if (method === 'put') {
+        if (form.id) {
           articles.value = articles.value.map(article =>
             article.id === response.data.id ? response.data : article
           );
@@ -56,7 +58,6 @@ export default {
           articles.value.push(response.data);
         }
 
-        // Reset form
         form.id = null;
         form.title = '';
         form.content = '';
@@ -90,8 +91,18 @@ export default {
 <style scoped>
 .container {
   background-color: #C0D6E8;
-  padding: 20px 120px; 
+  padding: 20px 40px;
   border-radius: 8px;
+  max-width: 800px;
+  margin: auto;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  text-align: center;
+  font-size: 2em;
+  color: #333;
+  margin-bottom: 20px;
 }
 
 .form {
@@ -103,21 +114,22 @@ export default {
   width: 100%;
   padding: 12px;
   margin-bottom: 16px;
-  border: 1px solid #FBF8DD;
-  border-radius: 8px; 
+  border: 1px solid #ddd;
+  border-radius: 8px;
   font-size: 16px;
-  transition: border-color 0.3s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .input-field:focus,
 .textarea-field:focus {
   outline: none;
-  border-color: #D20062; 
+  border-color: #D20062;
+  box-shadow: 0 0 8px rgba(210, 0, 98, 0.2);
 }
 
 .submit-btn {
-  background-color: #D20062; 
-  color: #FBF8DD;
+  background-color: #D20062;
+  color: white;
   padding: 14px 24px;
   border: none;
   border-radius: 8px;
@@ -127,7 +139,7 @@ export default {
 }
 
 .submit-btn:hover {
-  background-color: #D20062; 
+  background-color: #b30050;
 }
 
 .article-list {
@@ -144,18 +156,20 @@ export default {
 }
 
 .article-item strong {
+  display: block;
   margin-bottom: 8px;
   font-size: 20px;
 }
 
 .article-item span {
+  display: block;
   margin-bottom: 8px;
   font-size: 16px;
 }
 
 .edit-btn,
 .delete-btn {
-  background-color: #D20062; 
+  background-color: #D20062;
   color: white;
   padding: 8px 16px;
   border: none;
@@ -167,11 +181,12 @@ export default {
 
 .edit-btn:hover,
 .delete-btn:hover {
-  background-color: #D20062; 
+  background-color: #b30050;
 }
 
 .load-btn {
-  background-color: #D20062; 
+  display: block;
+  background-color: #D20062;
   color: white;
   padding: 14px 24px;
   border: none;
@@ -179,10 +194,11 @@ export default {
   cursor: pointer;
   font-size: 16px;
   transition: background-color 0.3s ease;
-  margin-top: 20px; 
+  margin: 20px auto;
+  text-align: center;
 }
 
 .load-btn:hover {
-  background-color: #D20062;
+  background-color: #b30050;
 }
 </style>
